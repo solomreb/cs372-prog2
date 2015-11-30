@@ -54,7 +54,7 @@ public class ftclient {
     }
     else if (command.equals("-l")){
         filename = null;
-        dataPort = Integer.parseInt(args[4]);
+        dataPort = Integer.parseInt(args[3]);
     }
     
 
@@ -76,29 +76,46 @@ public class ftclient {
       //accept connection
       dataSock =servSock.accept();
 
-      // receive file
-      byte [] mybytearray  = new byte [FILE_SIZE];
-      InputStream is = dataSock.getInputStream();
-      fos = new FileOutputStream(filename + ".copy");
-      bos = new BufferedOutputStream(fos);
+      if (command.equals("-g")){
+        // receive file
+        byte [] mybytearray  = new byte [FILE_SIZE];
+        InputStream is = dataSock.getInputStream();
+        fos = new FileOutputStream(filename + ".copy");
+        bos = new BufferedOutputStream(fos);
 
-      //bytesRead = is.read(mybytearray);
-      //System.out.printf("bytes read: %d\n", bytesRead);
-      bytesRead = is.read(mybytearray,0,mybytearray.length);
-      current = bytesRead;
+        //bytesRead = is.read(mybytearray);
+        //System.out.printf("bytes read: %d\n", bytesRead);
+        bytesRead = is.read(mybytearray,0,mybytearray.length);
+        current = bytesRead;
 
-      do {
-         bytesRead =
-            is.read(mybytearray, current, (mybytearray.length-current));
-         if(bytesRead >= 0) current += bytesRead;
-      } while(bytesRead > -1);
+        do {
+           bytesRead =
+              is.read(mybytearray, current, (mybytearray.length-current));
+           if(bytesRead >= 0) current += bytesRead;
+        } while(bytesRead > -1);
 
-      System.out.printf("current: %s\n", current);
-      bos.write(mybytearray, 0 , current);
-      //bos.write(mybytearray, 0, bytesRead);
-      bos.flush();
-      System.out.println("File " + filename
-          + " downloaded (" + current + " bytes read)");
+        System.out.printf("current: %s\n", current);
+        bos.write(mybytearray, 0 , current);
+        //bos.write(mybytearray, 0, bytesRead);
+        bos.flush();
+        System.out.println("File " + filename
+            + " downloaded (" + current + " bytes read)");
+      }
+      else {
+        byte [] mybytearray  = new byte [FILE_SIZE];
+        InputStream is = dataSock.getInputStream();
+
+                bytesRead = is.read(mybytearray,0,mybytearray.length);
+        current = bytesRead;
+
+        do {
+           bytesRead =
+              is.read(mybytearray, current, (mybytearray.length-current));
+           if(bytesRead >= 0) current += bytesRead;
+        } while(bytesRead > -1);
+
+        System.out.write(mybytearray);
+      }
     }
     finally {
       if (fos != null) fos.close();

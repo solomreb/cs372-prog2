@@ -231,6 +231,7 @@ void send_file(int sock, char* filename){
     FILE *file = fopen(filename, "rb");
     if (!file) {
         printf("Can't open file %s for reading\n", filename);
+        
         return;
     }
     while (!feof(file)){
@@ -239,6 +240,41 @@ void send_file(int sock, char* filename){
         printf("numbytes: %d\n", numBytes);
         if (numBytes < 1) {
             printf("Can't read from file %s\n", filename);
+            fclose(file);
+            exit(1);
+        }
+        offset = 0;
+        do {
+            sentBytes = send(sock, &buf[offset], numBytes - offset, 0);
+            if (sentBytes < 1) {
+                printf("Can't write to socket\n");
+                fclose(file);
+                exit(1);
+            }
+
+            offset += sentBytes;
+
+        } while (offset < numBytes);
+    }
+
+    fclose(file);
+    return;
+}
+
+void send_ls(int sock){
+    char buf[1025];
+    int numBytes, sentBytes, offset;
+    FILE *file = popen("ls *", "r" );
+    if (!file) {
+        printf("Can't open path for reading\n");
+        return;
+    }
+    while (!feof(file)){
+
+        numBytes = fread(buf, 1, sizeof(buf), file);
+        printf("numbytes: %d\n", numBytes);
+        if (numBytes < 1) {
+            printf("Can't read from path %s\n");
             fclose(file);
             exit(1);
         }
@@ -289,8 +325,8 @@ int main(int argc, char *argv[])
     
 
     //command was -l
-    if (filename == '\0') {
-        system("ls -l");
+    if (strcmp(command, "-l") == 0) {
+        send_ls(data_fd);
     }
     //command was -g
     else {
