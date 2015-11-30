@@ -60,15 +60,13 @@ public class ftclient {
 
     
     try {
-      System.out.printf("Listening on data port %d\n", dataPort);
+      System.out.printf("Open on data port %d\n", dataPort);
       servSock = new ServerSocket(dataPort); //listen
-      System.out.printf("Connecting to host %s, port %d\n", serverHost, serverPort);
       controlSock = new Socket(serverHost, serverPort);
-
-      System.out.println("Connected.");
+      System.out.printf("Connected to host %s on port %d\n", serverHost, serverPort);
 
       //send command
-      outCommand = command + " " + dataPort + " " + filename;
+      outCommand = command + " " + serverHost + " " + dataPort + " " + filename;
       os = controlSock.getOutputStream();
       os.write(outCommand.getBytes());
       os.flush();
@@ -94,7 +92,6 @@ public class ftclient {
            if(bytesRead >= 0) current += bytesRead;
         } while(bytesRead > -1);
 
-        System.out.printf("current: %s\n", current);
         bos.write(mybytearray, 0 , current);
         //bos.write(mybytearray, 0, bytesRead);
         bos.flush();

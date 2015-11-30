@@ -6,22 +6,20 @@ FILENAME = server
 
 compile: server client
 
-server: fserver.cpp
-		g++ -o server fserver.cpp
+ftserver: fserver.cpp
+		g++ -o ftserver fserver.cpp
 
-client: ftclient.java
+ftclient: ftclient.java
 		javac ftclient.java
 
 server2: compile
-		./server $(PORT)
+		./ftserver $(PORT)
 
-client2: compile
-		#rm test.txt.copy
+clientg: compile
 		java ftclient $(HOST) $(PORT) -g $(FILENAME) $(DATAPORT)
-		#diff -s test.txt.copy test.txt
 
-client3: compile
-		java ftclient $(HOST) $(PORT) -l $(DATAPORT)
+#clientl: compile
+		#java ftclient $(HOST) $(PORT) -l $(DATAPORT)
 
 clean:
 	$(RM) *.o server client
